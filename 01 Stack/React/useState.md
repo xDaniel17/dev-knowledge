@@ -1,214 +1,78 @@
 ---
-title: "useState — Hook de estado en React"
-date: 2026-03-30
-lastUpdated: 2026-03-30
-tags:
-  - react
-  - hooks
-  - estado
-  - frontend
-category: "01 Stack"
-subcategory: "React"
+title: Guía de Hooks
+date: 2026-03-29
+lastUpdated: 2026-03-29
+tags: [tecnologias, desarrollo]
+category: 01 Stack
 author: Daniel
 version: 1.0.0
 status: active
-related:
-  - "[[useEffect]]"
-  - "[[React Query]]"
-  - "[[App Router]]"
+related: []
+migrated: true
+migratedFrom: 01 Stack/React-Hooks/Hooks-useState.md
 ---
 
-# useState — Hook de estado en React
-
-`useState` es el hook más fundamental de React. Permite que un componente funcional tenga y actualice su propio estado local, disparando un re-render cuando ese estado cambia.
-
----
-
-## ¿Qué es useState?
-
-`useState` es una función que recibe un valor inicial y devuelve un array de dos elementos: el estado actual y una función para actualizarlo.
-
+**`useState`** es un Hook en React que permite manejar el estado en componentes funcionales. El estado se utiliza para almacenar y actualizar información que cambia con el tiempo, como datos de entrada de formularios, contadores o respuestas de una API.
+### ¿Cuándo usarlo?
+- **Estado Local Simple**: Para manejar el estado local que solo afecta a un componente específico.
+- **Entrada de Usuario**: Almacenar datos temporales como el valor de un campo de entrada o checkbox.
+- **Toggles**: Gestionar cambios de estado simples como mostrar/ocultar contenido.
+### Sintaxis básica
 ```tsx
-const [state, setState] = useState(initialValue);
+const [estado, setEstado] = useState(valorInicial);
 ```
-
-Internamente, React almacena el estado fuera del componente en una estructura de "fiber". Cada vez que llamas `setState`, React programa un re-render del componente con el nuevo valor. El orden de llamada de los hooks debe ser siempre el mismo entre renders — por eso no puedes llamar hooks dentro de condicionales.
-
----
-
-## Casos de uso comunes
-
-### 1. Contador simple
-
+### Parámetros de `useState`
+- **`valorInicial` (entrada):** Es el valor inicial del estado, que puede ser cualquier tipo (número, cadena, objeto, etc.). También puede ser una función para calcular el valor inicial solo al montar el componente.
+### Valores devueltos:
+1. **`estado`:** El valor actual del estado, que es inmutable.
+2. **`setEstado`:** Una función que actualiza el estado. Puede recibir:
+    - Un nuevo valor directamente: `setEstado(nuevoValor)`.
+    - Una función basada en el estado previo: `setEstado(prevEstado => nuevoEstado)`.
+### Ejemplo básico
+Un contador que aumenta cuando se hace clic en un botón:
 ```tsx
-import { useState } from 'react';
-
-function Counter() {
-  const [count, setCount] = useState(0);
-
+import React, { useState } from 'react';
+const Formulario: React.FC = () => {
+  // Estado tipado como una cadena para manejar el texto ingresado
+  const [nombre, setNombre] = useState<string>('');
   return (
     <div>
-      <p>Contador: {count}</p>
-      <button onClick={() => setCount(count + 1)}>+1</button>
-      <button onClick={() => setCount(count - 1)}>-1</button>
-      <button onClick={() => setCount(0)}>Resetear</button>
+      <h1>Formulario</h1>
+      <input
+        type="text"
+        value={nombre}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNombre(e.target.value)}
+        placeholder="Escribe tu nombre"
+      />
+      <p>Hola, {nombre}</p>
     </div>
   );
-}
-```
-
-### 2. Formulario controlado
-
-```tsx
-function LoginForm() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log({ email, password });
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Email"
-      />
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Contraseña"
-      />
-      <button type="submit">Ingresar</button>
-    </form>
-  );
-}
-```
-
-### 3. Estado complejo con objeto
-
-Cuando el estado es un objeto, nunca mutes el objeto directamente — siempre crea uno nuevo con spread:
-
-```tsx
-type UserProfile = {
-  name: string;
-  email: string;
-  role: 'admin' | 'user';
 };
-
-function ProfileEditor() {
-  const [profile, setProfile] = useState<UserProfile>({
-    name: 'Daniel',
-    email: 'daniel@example.com',
-    role: 'admin',
-  });
-
-  const updateName = (name: string) => {
-    // CORRECTO: nuevo objeto con spread
-    setProfile(prev => ({ ...prev, name }));
-  };
-
-  const updateRole = (role: UserProfile['role']) => {
-    setProfile(prev => ({ ...prev, role }));
-  };
-
-  return (
-    <div>
-      <input value={profile.name} onChange={(e) => updateName(e.target.value)} />
-      <p>Rol: {profile.role}</p>
-    </div>
-  );
-}
+export default Formulario;
 ```
+### Buenas Prácticas
+- **Estado Simple**: Usa `useState` para manejar estados simples. Para estados más complejos o múltiples valores relacionados, considera `useReducer`.
+- **Actualizar Basado en el Estado Anterior**: Usa la función de actualización con un callback para asegurarte de tener siempre el estado más reciente:
+ECHO is off.
+```jsx
+    setCount(prevCount => prevCount + 1);`
+    ```
+ECHO is off.
+- **Evitar Actualizaciones Innecesarias**: Asegúrate de no llamar `setState` innecesariamente para evitar renderizados redundantes.
+- **Dividir Estado**: Si un componente tiene múltiples piezas de estado no relacionadas, es mejor dividirlas en múltiples llamadas a `useState` en lugar de agruparlas en un solo objeto.
+`useState` es una herramienta esencial en el arsenal de cualquier desarrollador de React, proporcionando una manera simple y efectiva de manejar el estado en componentes funcionales.
 
 ---
 
-## Actualización basada en estado anterior
+## 📋 Historial de Versiones
 
-Cuando el nuevo estado depende del anterior, usa la forma funcional de `setState`. Esto evita bugs en actualizaciones rápidas o en closures desactualizadas:
+| Versión | Fecha | Autor | Cambios |
+|---------|-------|-------|---------|
+| 1.0.0 | 2026-03-29 | Daniel Herrera | Versión inicial |
 
-```tsx
-// ❌ Puede fallar si se llama varias veces seguidas
-setCount(count + 1);
-
-// ✅ Siempre usa el valor más reciente
-setCount(prev => prev + 1);
-```
-
----
-
-## Estado asíncrono — el bug clásico
-
-`setState` es asíncrono: después de llamarlo, `state` no cambia inmediatamente en la misma ejecución.
-
-```tsx
-function Example() {
-  const [count, setCount] = useState(0);
-
-  const handleClick = () => {
-    setCount(count + 1);
-    console.log(count); // ❌ sigue siendo el valor anterior
-    // React todavía no re-renderizó
-  };
-}
-```
-
-Si necesitas leer el nuevo valor, hazlo en el siguiente render o usa `useEffect`.
-
----
-
-## Inicialización costosa — lazy initializer
-
-Si el valor inicial requiere un cálculo costoso, pasa una función en lugar del valor. React la ejecuta solo en el primer render:
-
-```tsx
-// ❌ Recalcula localStorage en cada render
-const [data, setData] = useState(JSON.parse(localStorage.getItem('data') || '[]'));
-
-// ✅ Solo ejecuta la función en el montaje inicial
-const [data, setData] = useState(() => {
-  return JSON.parse(localStorage.getItem('data') || '[]');
-});
-```
-
----
-
-## Errores comunes
-
-> [!WARNING]
-> **Mutar el estado directamente:** Nunca hagas `state.push(item)` o `state.name = 'nuevo'`. React no detectará el cambio y el componente no se re-renderizará.
->
-> **Arrays:** Usa `[...arr, newItem]` o `arr.filter(...)` en lugar de `.push()` o `.splice()`.
->
-> **Objetos:** Usa spread `{ ...obj, key: value }` en lugar de asignar propiedades directamente.
->
-> **Demasiado estado local:** Si el estado se comparte entre muchos componentes, considera Context o un estado global. useState es para estado realmente local al componente.
-
----
-
-## ¿Cuándo preferir useReducer?
-
-Usa `useReducer` en lugar de `useState` cuando:
-- El estado tiene múltiples sub-valores relacionados
-- El siguiente estado depende del anterior de forma compleja
-- Tienes múltiples acciones que modifican el estado de formas diferentes
-- Quieres lógica de actualización testeable de forma aislada
-
-```tsx
-// useState se complica cuando hay muchas actualizaciones relacionadas
-// useReducer centraliza la lógica de transformación del estado
-```
-
-Ver [[useEffect]] para la contraparte reactiva, y [[React Query]] para estado de servidor.
-
----
 
 ## Control de versiones
 
 | Versión | Fecha | Autor | Cambios |
 |---------|-------|-------|---------|
-| 1.0.0 | 2026-03-30 | Daniel | Creación inicial |
+| 1.0.0 | 2026-03-29 | Daniel | Migración desde personal-knowledge |
