@@ -53,13 +53,17 @@ Documentación técnica de las tecnologías del stack de trabajo. Una subcarpeta
 ### Plataformas y Servicios
 | Subcarpeta | Descripción | Contenido |
 |-----------|-------------|----------|
-| `Tech-Services/` | Hosting, bases de datos, servicios cloud | [[Tech-Services/_README.md|Vercel, Netlify, MongoDB]] |
+| `Tech-Services/` | Hosting, bases de datos, servicios cloud | [[Tech-Services/_README.md|Vercel, Netlify, MongoDB, Firebase, PostgreSQL-Supabase, Redis]] |
 
 ### DevOps & Herramientas
 | Subcarpeta | Descripción | Contenido |
 |-----------|-------------|----------|
 | `Git/` | Control de versiones distribuido | [[Git/_README.md|Comandos, Workflows, Git Flow, GitHub Flow]] |
 | **CLI-Reference** | Comandos terminal Windows y macOS | [[CLI-Reference.md|npm, git, Node.js, Netlify, Vercel, MongoDB]] |
+| **Docker** | Containerización y composición | [[Docker.md|Dockerfile, Compose, Multi-stage, Optimización]] |
+| **TypeScript** | Tipado estático para JavaScript | [[TypeScript.md|Tipos, Generics, Utilidades, React integration]] |
+| **Testing** | Jest, Cypress, React Testing Library | [[Testing.md|Unit, Integration, E2E, Mocking, Coverage]] |
+| **fnm-Homebrew** | Gestión de Node y paquetes | [[fnm-Homebrew.md|fnm, Homebrew, .nvmrc, Setup]] |
 
 ---
 
@@ -76,12 +80,15 @@ SORT subcategory ASC, lastUpdated DESC
 
 ## 📊 Estadísticas de Documentación
 
-- **Total de carpetas**: 15 (incluyendo Tech-Services)
-- **Total de archivos**: 100+ (recuperados, mejorados y nuevos)
-- **READMEs por carpeta**: 13 (navegación mejorada)
+- **Total de carpetas**: 15+ (incluyendo Tech-Services, DevOps)
+- **Total de archivos**: 130+ (recuperados, mejorados y nuevos)
+- **READMEs por carpeta**: 13+ (navegación mejorada)
 - **Documentación de React Hooks**: 18+ hooks cubiertos
 - **Documentación de Next.js**: 7+ guías especializadas
-- **Documentación de Servicios**: Vercel, MongoDB, Netlify
+- **Documentación de Servicios**: Vercel, MongoDB, Netlify, Firebase, PostgreSQL-Supabase, Redis
+- **Documentación de Backend**: Firebase, PostgreSQL, Supabase, Redis, MongoDB
+- **Documentación de Testing**: Jest, Cypress, React Testing Library
+- **Documentación de DevOps**: Docker, TypeScript, Testing, fnm-Homebrew
 - **CLI Reference**: Comandos Windows y macOS
 - **Últimas actualizaciones**: 2026-03-30
 
@@ -107,6 +114,15 @@ SORT subcategory ASC, lastUpdated DESC
 
 ## ✨ Mejoras Recientes
 
+### Versión 4.0.0 (2026-03-30)
+- ✅ **Firebase documentation**: Autenticación, Firestore, Cloud Functions, Storage
+- ✅ **PostgreSQL & Supabase**: SQL avanzado, RLS, Supabase client, real-time
+- ✅ **Redis Caching**: Estrategias, sessionmanagement, pub/sub, optimización
+- ✅ **TypeScript Best Practices**: Tipos avanzados, Generics, Utilidades, React integration
+- ✅ **Testing Strategy**: Jest, Cypress, React Testing Library, E2E, Mocking
+- ✅ **Docker & Containerization**: Dockerfile, Compose, Multi-stage, Security, Optimization
+- ✅ **Tech-Services actualizado**: 6 servicios principales documentados
+
 ### Versión 3.0.0 (2026-03-30)
 - ✅ **React Hooks expandido**: Catálogo de 18+ hooks + comparativa
 - ✅ **Next.js profundizado**: Data Fetching, Server Actions, Performance, Deployment
@@ -126,15 +142,14 @@ SORT subcategory ASC, lastUpdated DESC
 - ✅ **Backend completo** (Express, Node, Strapi)
 
 ### Próximas Mejoras Planeadas
-- Firebase documentation
-- PostgreSQL & Supabase
-- Redis caching
-- AWS deployment
-- Auth0 & JWT
-- Stripe integration
-- Performance optimization guides
-- Testing strategies (Jest, Cypress, Testing Library)
-- Docker & containerización
+- AWS deployment & infrastructure
+- Auth0 & JWT authentication
+- Stripe payment integration
+- Cloudinary image optimization
+- SendGrid email services
+- Microservices architecture
+- GraphQL implementation
+- API design patterns
 
 ---
 
@@ -162,5 +177,7 @@ SORT subcategory ASC, lastUpdated DESC
 
 | Versión | Fecha | Autor | Cambios |
 |---------|-------|-------|---------|
-| 2.0.0 | 2026-03-30 | Daniel | Recuperación de 80+ archivos, reorganización, enriquecimiento de documentación |
+| 4.0.0 | 2026-03-30 | OpenCode | Firebase, PostgreSQL, Redis, TypeScript, Testing, Docker (6 nuevos) |
+| 3.0.0 | 2026-03-30 | Daniel | React Hooks expandido, Next.js profundizado, Tech-Services creado |
+| 2.0.0 | 2026-03-30 | Daniel | Recuperación de 80+ archivos, reorganización, enriquecimiento |
 | 1.0.0 | 2026-03-30 | Daniel | Creación inicial (13 archivos) |
