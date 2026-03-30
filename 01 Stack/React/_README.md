@@ -23,17 +23,41 @@ Documentación técnica integral de React: hooks, componentes, patrones de estad
 
 ## 🪝 Hooks (Manejo de Estado)
 
+### 📋 Catálogo Completo
+[[Hooks-Catalogo.md]] - **Referencia visual de TODOS los hooks (18+)** desde React 16.8 hasta React 19
+
+### Hooks Básicos (Nivel Principiante)
+
 | Hook | Descripción | Archivo |
 |------|-------------|---------|
 | **useState** | Agregar estado local a componentes | [[useState.md]] |
-| **useReducer** | Estado complejo con lógica centralizada | [[useReducer.md]] |
-| **useEffect** | Efectos secundarios y ciclo de vida | [[useEffect.md]] |
+| **useRef** | Acceso directo al DOM y valores mutables | [[useRef.md]] |
 | **useContext** | Compartir datos sin prop drilling | [[useContext.md]] |
+| **useId** | Generar IDs únicos (React 18+) | [[useId.md]] |
+
+### Hooks Intermedios (Nivel Intermedio)
+
+| Hook | Descripción | Archivo |
+|------|-------------|---------|
+| **useEffect** | Efectos secundarios y ciclo de vida | [[useEffect.md]] |
 | **useMemo** | Memoizar cálculos costosos | [[useMemo.md]] |
 | **useCallback** | Memoizar funciones callback | [[useCallback.md]] |
-| **useRef** | Acceso directo al DOM y valores mutables | [[useRef.md]] |
-| **useId** | Generar IDs únicos | [[useId.md]] |
-| **useLayoutEffect** | Efectos síncronos con DOM | [[useLayoutEffect.md]] |
+| **useReducer** | Estado complejo con lógica centralizada | [[useReducer.md]] |
+| **useTransition** | Transiciones de estado asincrónico (React 18+) | - |
+| **useDeferredValue** | Diferir actualizaciones (React 18+) | - |
+
+### Hooks Avanzados (Nivel Experto)
+
+| Hook | Descripción | Disponible |
+|------|-------------|-----------|
+| **useLayoutEffect** | Efectos síncronos con DOM | React 16.8+ |
+| **useInsertionEffect** | Inyectar CSS dinámico | React 18.0+ |
+| **useSyncExternalStore** | Suscribirse a estado externo | React 18.0+ |
+| **useImperativeHandle** | Exponer métodos imperativos | React 16.8+ |
+| **useDebugValue** | Debug en DevTools | React 16.8+ |
+| **useEvent** | Event handlers estables | React 19.0+ |
+| **useActionState** | Form actions con estado | React 19.0+ |
+| **use()** | Unwrap promises | React 19.0+ |
 
 ---
 

@@ -25,35 +25,41 @@ Documentación técnica de las tecnologías del stack de trabajo. Una subcarpeta
 ### Frontend
 | Subcarpeta | Descripción | Contenido |
 |-----------|-------------|----------|
-| `React/` | Framework declarativo + Hooks completos | [[React/_README.md|useState, useEffect, useContext, useReducer, Patrones]] |
-| `Next.js/` | React meta-framework (SSR, SSG, ISR) | [[Next.js/_README.md|App Router, Pages Router, Rendering strategies]] |
-| `Angular/` | Framework enterprise TypeScript-first | [[Angular/_README.md|Signals, Directives, RxJS, Components]] |
-| `Astro/` | Island architecture, SSG/SSR híbrido | [[Astro/_README.md|File-based routing, Zero JS by default]] |
+| `React/` | Framework declarativo + Hooks completos | [[React/_README.md|18+ Hooks, Catálogo, Comparativa, Patrones]] |
+| `Next.js/` | React meta-framework (SSR, SSG, ISR) | [[Next.js/_README.md|App Router, Data Fetching, Server Actions, Performance, Deployment]] |
+| `Angular/` | Framework enterprise TypeScript-first | [[Angular/_README.md|Signals, Directives, RxJS, Components, Setup]] |
+| `Astro/` | Island architecture, SSG/SSR híbrido | [[Astro/_README.md|File-based routing, Zero JS by default, Setup]] |
 | `CSS-Tailwind/` | Utility-first CSS framework | [[CSS-Tailwind/Utilidades clave.md|Responsive, Dark mode, Customización]] |
 
 ### Backend
 | Subcarpeta | Descripción | Contenido |
 |-----------|-------------|----------|
-| `Node/` | JavaScript runtime para servidor | [[Node/_README.md|Event Loop, Instalación, Guías]] |
-| `Express/` | Minimal web framework | [[Express/_README.md|Middlewares, Routing, REST APIs]] |
-| `Strapi/` | Headless CMS basado en Node | [[Strapi/_README.md|Content Types, Auto-generated APIs]] |
+| `Node/` | JavaScript runtime para servidor | [[Node/_README.md|Event Loop, Instalación oficial, fnm, Guías]] |
+| `Express/` | Minimal web framework | [[Express/_README.md|Middlewares, Routing, Error Handling, REST APIs]] |
+| `Strapi/` | Headless CMS basado en Node | [[Strapi/_README.md|Content Types, Auto-generated APIs, Estructura]] |
 
 ### Fundamentos Web
 | Subcarpeta | Descripción | Contenido |
 |-----------|-------------|----------|
-| `Web-Conceptos/` | Conceptos teóricos y arquitectónicos | [[Web-Conceptos/_README.md|REST API, GraphQL, Rendering Strategies, Arquitectura]] |
+| `Web-Conceptos/` | Conceptos teóricos y arquitectónicos | [[Web-Conceptos/_README.md|REST API, GraphQL, Rendering Strategies, Arquitectura Web]] |
 
 ### IA & Automatización
 | Subcarpeta | Descripción | Contenido |
 |-----------|-------------|----------|
 | `IA-Agents/` | Agentes, MCP, Chain of Thought | [[IA-Agents/_README.md|Agentes-IA, MCP Protocol, Skills Ecosystem]] |
 | `IA-Tools/` | Herramientas de IA para desarrollo | [[IA-Tools/_README.md|OpenCode, Claude Code, GitHub Copilot]] |
-| `IA-Skills/` | Sistema de skills y extensiones | [[IA-Skills/_README.md|Skills, MCP Implementaciones (Anthropic, Vercel)]] |
+| `IA-Skills/` | Sistema de skills y extensiones | [[IA-Skills/_README.md|Skills, MCP Anthropic, Vercel, Skills.sh]] |
+
+### Plataformas y Servicios
+| Subcarpeta | Descripción | Contenido |
+|-----------|-------------|----------|
+| `Tech-Services/` | Hosting, bases de datos, servicios cloud | [[Tech-Services/_README.md|Vercel, Netlify, MongoDB]] |
 
 ### DevOps & Herramientas
 | Subcarpeta | Descripción | Contenido |
 |-----------|-------------|----------|
 | `Git/` | Control de versiones distribuido | [[Git/_README.md|Comandos, Workflows, Git Flow, GitHub Flow]] |
+| **CLI-Reference** | Comandos terminal Windows y macOS | [[CLI-Reference.md|npm, git, Node.js, Netlify, Vercel, MongoDB]] |
 
 ---
 
@@ -70,9 +76,13 @@ SORT subcategory ASC, lastUpdated DESC
 
 ## 📊 Estadísticas de Documentación
 
-- **Total de carpetas**: 13
-- **Total de archivos**: 80+ (recuperados y mejorados)
-- **READMEs por carpeta**: 11 (navegación mejorada)
+- **Total de carpetas**: 15 (incluyendo Tech-Services)
+- **Total de archivos**: 100+ (recuperados, mejorados y nuevos)
+- **READMEs por carpeta**: 13 (navegación mejorada)
+- **Documentación de React Hooks**: 18+ hooks cubiertos
+- **Documentación de Next.js**: 7+ guías especializadas
+- **Documentación de Servicios**: Vercel, MongoDB, Netlify
+- **CLI Reference**: Comandos Windows y macOS
 - **Últimas actualizaciones**: 2026-03-30
 
 ---
@@ -80,20 +90,31 @@ SORT subcategory ASC, lastUpdated DESC
 ## 🎯 Navegación Rápida
 
 ### Por Nivel
-- **Principiantes**: [[React/_README.md|React Basics]], [[Web-Conceptos/_README.md|Web Conceptos]]
-- **Intermedio**: [[Next.js/_README.md|Next.js]], [[Express/_README.md|Express]], [[Git/_README.md|Git]]
-- **Avanzado**: [[Angular/_README.md|Angular]], [[IA-Agents/_README.md|IA Agents]], [[Node/_README.md|Node internals]]
+- **Principiantes**: [[React/_README.md|React Basics]], [[Web-Conceptos/_README.md|Web Conceptos]], [[CLI-Reference.md|CLI Commands]]
+- **Intermedio**: [[Next.js/_README.md|Next.js]], [[Express/_README.md|Express]], [[Git/_README.md|Git]], [[Tech-Services/MongoDB.md|MongoDB]]
+- **Avanzado**: [[Angular/_README.md|Angular]], [[IA-Agents/_README.md|IA Agents]], [[Node/_README.md|Node internals]], [[Next.js/Performance.md|Performance]]
 
 ### Por Caso de Uso
 - **Frontend moderno**: React, Next.js, Angular, Astro
 - **Backend robusto**: Node.js, Express, Strapi
+- **Bases de datos**: MongoDB, Prisma, Mongoose
+- **Deployment**: Vercel, Netlify, Docker
 - **IA y Automatización**: IA-Agents, IA-Tools, IA-Skills
 - **Teoría Web**: Web-Conceptos, Rendering Strategies
-- **DevOps**: Git, Workflows
+- **DevOps & Terminal**: Git, CLI-Reference
 
 ---
 
 ## ✨ Mejoras Recientes
+
+### Versión 3.0.0 (2026-03-30)
+- ✅ **React Hooks expandido**: Catálogo de 18+ hooks + comparativa
+- ✅ **Next.js profundizado**: Data Fetching, Server Actions, Performance, Deployment
+- ✅ **Vercel documentation**: Setup, env vars, Edge Functions, analytics
+- ✅ **MongoDB documentation**: Setup local, Mongoose, Prisma, MongoDB Atlas
+- ✅ **Netlify documentation**: Functions, Forms, Split testing, deployment
+- ✅ **CLI Reference**: Comandos completos para Windows y macOS
+- ✅ **Tech-Services carpeta**: Centralizar plataformas y servicios
 
 ### Versión 2.0.0 (2026-03-30)
 - ✅ **Recuperados 80+ archivos** de bóveda anterior
@@ -103,15 +124,17 @@ SORT subcategory ASC, lastUpdated DESC
 - ✅ **READMEs de navegación** en todas las carpetas principales
 - ✅ **Documentación de frameworks** (Angular, Astro, Next.js completo)
 - ✅ **Backend completo** (Express, Node, Strapi)
-- ✅ **Git & DevOps** (Comandos, Workflows, Estrategias)
 
 ### Próximas Mejoras Planeadas
-- CSS Frameworks Comparison
-- Web Libraries (Redux, React-Query, Zustand)
-- TypeScript Best Practices
-- Performance Optimization Guides
-- Testing Strategies (Jest, Testing Library, Cypress)
-- Docker & Deployment Guides
+- Firebase documentation
+- PostgreSQL & Supabase
+- Redis caching
+- AWS deployment
+- Auth0 & JWT
+- Stripe integration
+- Performance optimization guides
+- Testing strategies (Jest, Cypress, Testing Library)
+- Docker & containerización
 
 ---
 
