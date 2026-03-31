@@ -1,842 +1,841 @@
 ---
-title: PostgreSQL & Supabase
+title: Supabase - Firebase Open Source Alternative
 date: 2026-03-30
-tags: [database, backend, sql, supabase]
-category: Tech-Services
-author: OpenCode
-version: 1.0.0
+lastUpdated: 2026-03-30
+tags:
+  - supabase
+  - database
+  - backend
+  - postgresql
+  - authentication
+  - realtime
+  - storage
+  - saas
+category: "01 Stack"
+subcategory: "Tech-Services"
+author: Daniel
+version: 2.0.0
 status: active
+related:
+  - PostgreSQL-Supabase
+  - Firebase
 ---
 
-# PostgreSQL & Supabase - Complete Guide
+# 🚀 Supabase - Firebase Open Source Alternative
 
-PostgreSQL is a powerful, open-source relational database. Supabase is an open-source Firebase alternative that provides PostgreSQL with real-time capabilities, authentication, and storage.
-
-## Table of Contents
-1. [PostgreSQL Setup](#postgresql-setup)
-2. [Basic SQL Operations](#basic-sql-operations)
-3. [Advanced Queries](#advanced-queries)
-4. [Supabase Integration](#supabase-integration)
-5. [Authentication](#authentication)
-6. [Real-time Subscriptions](#real-time-subscriptions)
-7. [Storage](#storage)
-8. [Best Practices](#best-practices)
-9. [Performance Optimization](#performance-optimization)
-10. [Troubleshooting](#troubleshooting)
+Supabase es una plataforma **open-source** que proporciona PostgreSQL como servicio con características adicionales: autenticación, storage, edge functions, real-time subscriptions y más. Es una alternativa a Firebase con la potencia de PostgreSQL.
 
 ---
 
-## PostgreSQL Setup
+## 🎯 ¿Qué es Supabase?
 
-### macOS Installation (Homebrew)
+```
+┌─────────────────────────────────────────────────────────┐
+│                      SUPABASE                           │
+├─────────────────────────────────────────────────────────┤
+│  PostgreSQL (relacional, potente, escalable)            │
+│  + Auth (múltiples proveedores)                        │
+│  + Storage (archivos, imágenes, PDFs)                   │
+│  + Realtime (subscriptions live)                        │
+│  + Edge Functions (serverless)                         │
+│  + Vector (búsqueda semántica)                         │
+│  = Backend completo como servicio                      │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Características Principales
+
+| Feature | Descripción |
+|---------|-------------|
+| **Database** | PostgreSQL 15+ hosted |
+| **Auth** | Email, OAuth, SMS, Magic Links |
+| **Storage** |Buckets para archivos |
+| **Realtime** | WebSocket subscriptions |
+| **Edge Functions** | Serverless TypeScript/JS |
+| **Vector** | Búsqueda de embeddings |
+| **AI** | Integración con LLMs |
+| **Auto APIs** | REST y GraphQL automática |
+
+---
+
+## 📋 Setup Inicial
+
+### Crear Proyecto
 
 ```bash
-# Install PostgreSQL
-brew install postgresql@15
-
-# Start PostgreSQL service
-brew services start postgresql@15
-
-# Connect to PostgreSQL
-psql postgres
+# 1. Ve a https://supabase.com/dashboard
+# 2. Click "New Project"
+# 3. Selecciona organización
+# 4. Configura:
+#    - Project name: my-app
+#    - Database Password: (genera una segura)
+#    - Region: más cercana a tus usuarios
+# 5. Click "Create new project"
 ```
 
-### Windows Installation (PowerShell)
-
-```powershell
-# Using Chocolatey
-choco install postgresql
-
-# Or download from official site
-# https://www.postgresql.org/download/windows/
-
-# Start PostgreSQL service (after installation)
-# Services app -> PostgreSQL -> Start
-```
-
-### Create Database & User
-
-```sql
--- Connect to PostgreSQL
-psql postgres
-
--- Create database
-CREATE DATABASE mydatabase;
-
--- Create user
-CREATE USER myuser WITH PASSWORD 'secure_password';
-
--- Grant privileges
-ALTER ROLE myuser SET client_encoding TO 'utf8';
-ALTER ROLE myuser SET default_transaction_isolation TO 'read committed';
-ALTER ROLE myuser SET default_transaction_deferrable TO on;
-ALTER ROLE myuser SET default_time_zone TO 'UTC';
-GRANT ALL PRIVILEGES ON DATABASE mydatabase TO myuser;
-
--- Connect to new database
-\c mydatabase
-
--- Revoke public schema permissions (security)
-REVOKE ALL ON SCHEMA public FROM PUBLIC;
-GRANT ALL ON SCHEMA public TO myuser;
-```
-
-### Connect from Application
-
-```bash
-# Connection string format
-postgresql://username:password@localhost:5432/database_name
-
-# Example with environment variable
-DATABASE_URL=postgresql://myuser:secure_password@localhost:5432/mydatabase
-```
-
----
-
-## Basic SQL Operations
-
-### Create Tables
-
-```sql
--- Create users table
-CREATE TABLE users (
-  id SERIAL PRIMARY KEY,
-  email VARCHAR(255) UNIQUE NOT NULL,
-  username VARCHAR(100) UNIQUE NOT NULL,
-  password_hash VARCHAR(255) NOT NULL,
-  profile_picture_url TEXT,
-  bio TEXT,
-  is_active BOOLEAN DEFAULT true,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Create posts table
-CREATE TABLE posts (
-  id SERIAL PRIMARY KEY,
-  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  title VARCHAR(255) NOT NULL,
-  content TEXT NOT NULL,
-  published BOOLEAN DEFAULT false,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Create comments table
-CREATE TABLE comments (
-  id SERIAL PRIMARY KEY,
-  post_id INTEGER NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
-  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  content TEXT NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Create indexes
-CREATE INDEX idx_posts_user_id ON posts(user_id);
-CREATE INDEX idx_comments_post_id ON comments(post_id);
-CREATE INDEX idx_comments_user_id ON comments(user_id);
-```
-
-### Insert Data
-
-```sql
--- Insert single row
-INSERT INTO users (email, username, password_hash)
-VALUES ('john@example.com', 'john_doe', 'hashed_password');
-
--- Insert multiple rows
-INSERT INTO users (email, username, password_hash) VALUES
-  ('jane@example.com', 'jane_doe', 'hashed_password'),
-  ('bob@example.com', 'bob_smith', 'hashed_password');
-
--- Insert with RETURNING (get generated ID)
-INSERT INTO users (email, username, password_hash)
-VALUES ('alice@example.com', 'alice_wonder', 'hashed_password')
-RETURNING id, email, created_at;
-```
-
-### Read Data
-
-```sql
--- Select all users
-SELECT * FROM users;
-
--- Select specific columns
-SELECT id, email, username FROM users;
-
--- With WHERE clause
-SELECT * FROM users WHERE is_active = true;
-
--- With LIKE for text search
-SELECT * FROM users WHERE email LIKE '%@example.com';
-
--- Limit and offset (pagination)
-SELECT * FROM users LIMIT 10 OFFSET 20;
-
--- Order by
-SELECT * FROM users ORDER BY created_at DESC;
-
--- Count
-SELECT COUNT(*) as total_users FROM users;
-```
-
-### Update Data
-
-```sql
--- Update single column
-UPDATE users SET username = 'john_updated' WHERE id = 1;
-
--- Update multiple columns
-UPDATE users
-SET username = 'john_v2', updated_at = CURRENT_TIMESTAMP
-WHERE id = 1;
-
--- Conditional update
-UPDATE posts
-SET published = true, updated_at = CURRENT_TIMESTAMP
-WHERE user_id = 1 AND created_at > NOW() - INTERVAL '7 days';
-```
-
-### Delete Data
-
-```sql
--- Delete specific record
-DELETE FROM users WHERE id = 1;
-
--- Delete with condition
-DELETE FROM posts WHERE published = false AND created_at < NOW() - INTERVAL '30 days';
-
--- Delete all (dangerous!)
-DELETE FROM users; -- Be careful!
-```
-
----
-
-## Advanced Queries
-
-### Joins
-
-```sql
--- INNER JOIN
-SELECT
-  u.username,
-  p.title,
-  p.created_at
-FROM users u
-INNER JOIN posts p ON u.id = p.user_id
-WHERE p.published = true
-ORDER BY p.created_at DESC;
-
--- LEFT JOIN (includes users with no posts)
-SELECT
-  u.username,
-  COUNT(p.id) as post_count
-FROM users u
-LEFT JOIN posts p ON u.id = p.user_id
-GROUP BY u.id, u.username;
-
--- Multiple joins
-SELECT
-  u.username,
-  p.title,
-  c.content as comment_content,
-  c.created_at
-FROM users u
-INNER JOIN posts p ON u.id = p.user_id
-INNER JOIN comments c ON p.id = c.post_id
-WHERE p.published = true
-ORDER BY c.created_at DESC;
-```
-
-### Aggregation & Grouping
-
-```sql
--- Group by with aggregation
-SELECT
-  user_id,
-  COUNT(*) as post_count,
-  MAX(created_at) as latest_post
-FROM posts
-GROUP BY user_id
-HAVING COUNT(*) > 0
-ORDER BY post_count DESC;
-
--- Subquery
-SELECT *
-FROM users
-WHERE id IN (
-  SELECT user_id FROM posts WHERE published = true
-);
-
--- With CTE (Common Table Expression)
-WITH published_posts AS (
-  SELECT user_id, COUNT(*) as post_count
-  FROM posts
-  WHERE published = true
-  GROUP BY user_id
-)
-SELECT u.username, pp.post_count
-FROM users u
-INNER JOIN published_posts pp ON u.id = pp.user_id;
-```
-
-### Window Functions
-
-```sql
--- ROW_NUMBER and PARTITION
-SELECT
-  id,
-  username,
-  created_at,
-  ROW_NUMBER() OVER (ORDER BY created_at) as signup_order,
-  RANK() OVER (PARTITION BY EXTRACT(YEAR FROM created_at) ORDER BY created_at) as yearly_rank
-FROM users;
-
--- Running total
-SELECT
-  id,
-  title,
-  created_at,
-  SUM(1) OVER (ORDER BY created_at) as running_total_posts
-FROM posts;
-```
-
----
-
-## Supabase Integration
-
-### Install Supabase Client
+### Instalar Cliente
 
 ```bash
 npm install @supabase/supabase-js
+# o con yarn
+yarn add @supabase/supabase-js
+# o con pnpm
+pnpm add @supabase/supabase-js
 ```
 
-### Initialize Supabase
+### Configurar Variables de Entorno
 
-```javascript
-// src/supabaseClient.js
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+```bash
+# .env.local
+NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIs...
+# La ANON KEY es pública (usada en cliente)
+# Para operaciones de servidor, usa el SERVICE_ROLE_KEY
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIs...
 ```
 
-### Read Data
+### Inicializar Cliente
 
-```javascript
-import { supabase } from './supabaseClient';
+```typescript
+// lib/supabase.ts
+import { createClient } from '@supabase/supabase-js'
 
-// Get all users
-const { data, error } = await supabase
-  .from('users')
-  .select('*');
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
-// Get with filter
-const { data, error } = await supabase
-  .from('users')
-  .select('*')
-  .eq('is_active', true)
-  .order('created_at', { ascending: false })
-  .limit(10);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-// Get single record
-const { data, error } = await supabase
-  .from('users')
-  .select('*')
-  .eq('id', 1)
-  .single();
-```
-
-### Insert Data
-
-```javascript
-// Insert single record
-const { data, error } = await supabase
-  .from('users')
-  .insert({
-    email: 'newuser@example.com',
-    username: 'newuser',
-    password_hash: 'hashed_password',
-  })
-  .select();
-
-// Bulk insert
-const { data, error } = await supabase
-  .from('users')
-  .insert([
-    {
-      email: 'user1@example.com',
-      username: 'user1',
-      password_hash: 'hash1',
-    },
-    {
-      email: 'user2@example.com',
-      username: 'user2',
-      password_hash: 'hash2',
-    },
-  ])
-  .select();
-```
-
-### Update Data
-
-```javascript
-// Update record
-const { data, error } = await supabase
-  .from('users')
-  .update({ username: 'updated_username' })
-  .eq('id', 1)
-  .select();
-
-// Update multiple records
-const { data, error } = await supabase
-  .from('posts')
-  .update({ published: true })
-  .eq('user_id', 1)
-  .select();
-```
-
-### Delete Data
-
-```javascript
-// Delete record
-const { data, error } = await supabase
-  .from('users')
-  .delete()
-  .eq('id', 1);
-
-// Delete multiple records
-const { data, error } = await supabase
-  .from('posts')
-  .delete()
-  .lt('created_at', new Date('2024-01-01'));
+// Cliente para servidor (con privilegios elevados)
+export const supabaseAdmin = createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 ```
 
 ---
 
-## Authentication
+## 🗄️ Base de Datos
 
-### Email & Password Auth
+### Table Editor (Dashboard)
 
-```javascript
-import { supabase } from './supabaseClient';
+Desde el dashboard puedes:
+- Crear tablas visualmente
+- Definir columnas y tipos
+- Establecer relaciones (foreign keys)
+- Configurar RLS policies
+- Ver y editar datos
 
-// Sign up
-const signUp = async (email, password) => {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-  });
-  return { data, error };
-};
+### SQL Editor
 
-// Sign in
-const signIn = async (email, password) => {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-  return { data, error };
-};
+```sql
+-- Crear tabla de perfiles
+CREATE TABLE profiles (
+  id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
+  username TEXT UNIQUE NOT NULL,
+  full_name TEXT,
+  avatar_url TEXT,
+  bio TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 
-// Sign out
-const signOut = async () => {
-  const { error } = await supabase.auth.signOut();
-  return { error };
-};
+-- Habilitar RLS
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 
-// Get current user
-const getCurrentUser = async () => {
-  const { data } = await supabase.auth.getUser();
-  return data.user;
-};
+-- Policy: usuarios pueden ver perfiles públicos
+CREATE POLICY "Profiles are viewable by everyone"
+  ON profiles FOR SELECT
+  USING (true);
+
+-- Policy: usuarios solo pueden actualizar su propio perfil
+CREATE POLICY "Users can update own profile"
+  ON profiles FOR UPDATE
+  USING (auth.uid() = id);
+```
+
+### Tipos de Datos PostgreSQL
+
+```sql
+-- UUID (recomendado para IDs)
+id UUID DEFAULT gen_random_uuid()
+
+-- Timestamps
+created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+
+-- JSONB (datos flexibles)
+metadata JSONB DEFAULT '{}'
+preferences JSONB
+
+-- Arrays
+tags TEXT[] DEFAULT '{}'
+
+-- Enums
+CREATE TYPE status AS ENUM ('active', 'inactive', 'pending');
+
+-- Textos largos
+description TEXT
+```
+
+---
+
+## 🔐 Autenticación
+
+### Email y Password
+
+```typescript
+// Registro
+const { data, error } = await supabase.auth.signUp({
+  email: 'user@example.com',
+  password: 'secure-password',
+  options: {
+    data: {
+      username: 'john_doe'
+    }
+  }
+})
+
+// Login
+const { data, error } = await supabase.auth.signInWithPassword({
+  email: 'user@example.com',
+  password: 'secure-password',
+})
+
+// Logout
+const { error } = await supabase.auth.signOut()
+
+// Obtener sesión actual
+const { data: { session } } = supabase.auth.getSession()
+
+// Obtener usuario actual
+const { data: { user } } = await supabase.auth.getUser()
 ```
 
 ### OAuth Providers
 
-```javascript
-// Google sign in
-const signInWithGoogle = async () => {
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-  });
-  return { data, error };
-};
+```typescript
+// Google
+const { data, error } = await supabase.auth.signInWithOAuth({
+  provider: 'google',
+  options: {
+    redirectTo: `${window.location.origin}/auth/callback`
+  }
+})
 
-// GitHub sign in
-const signInWithGithub = async () => {
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'github',
-  });
-  return { data, error };
-};
+// GitHub
+const { data, error } = await supabase.auth.signInWithOAuth({
+  provider: 'github',
+  options: {
+    redirectTo: `${window.location.origin}/auth/callback`
+  }
+})
+
+// Apple
+const { data, error } = await supabase.auth.signInWithOAuth({
+  provider: 'apple'
+})
+
+// Twitter / Facebook / Azure / Discord / Spotify / etc.
 ```
 
-### Monitor Auth State
+### Magic Links
 
-```javascript
-import { useEffect, useState } from 'react';
-import { supabase } from './supabaseClient';
+```typescript
+const { error } = await supabase.auth.signInWithOtp({
+  email: 'user@example.com',
+  options: {
+    emailRedirectTo: `${window.location.origin}/auth/callback`
+  }
+})
+```
 
-const useAuth = () => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+### Callback Handler (Next.js)
+
+```typescript
+// app/auth/callback/route.ts
+import { createClient } from '@/lib/supabase'
+import { NextResponse } from 'next/server'
+
+export async function GET(request: Request) {
+  const { searchParams, origin } = new URL(request.url)
+  const code = searchParams.get('code')
+  const next = searchParams.get('next') ?? '/dashboard'
+
+  if (code) {
+    const supabase = createClient()
+    const { error } = await supabase.auth.exchangeCodeForSession(code)
+    if (!error) {
+      return NextResponse.redirect(`${origin}${next}`)
+    }
+  }
+
+  return NextResponse.redirect(`${origin}/login?error=auth`)
+}
+```
+
+### Middleware (protección de rutas)
+
+```typescript
+// middleware.ts
+import { createServerClient } from '@supabase/ssr'
+import { NextResponse, type NextRequest } from 'next/server'
+
+export async function middleware(request: NextRequest) {
+  let supabaseResponse = NextResponse.next({
+    request,
+  })
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          )
+          supabaseResponse = NextResponse.next({
+            request,
+          })
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options)
+          )
+        },
+      },
+    }
+  )
+
+  const { data: { user } } = await supabase.auth.getUser()
+
+  // Proteger rutas
+  if (!user && !request.nextUrl.pathname.startsWith('/auth')) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/auth/login'
+    return NextResponse.redirect(url)
+  }
+
+  return supabaseResponse
+}
+
+export const config = {
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
+}
+```
+
+### Monitor Auth State (React)
+
+```typescript
+// components/AuthProvider.tsx
+'use client'
+
+import { createContext, useContext, useEffect, useState } from 'react'
+import { User } from '@supabase/supabase-js'
+import { createClient } from '@/lib/supabase'
+
+const Context = createContext<{ user: User | null }>({ user: null })
+
+export const useUser = () => useContext(Context)
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null)
 
   useEffect(() => {
-    const getUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      setUser(data.user);
-      setLoading(false);
-    };
+    const supabase = createClient()
+    
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
 
-    getUser();
+    return () => subscription.unsubscribe()
+  }, [])
 
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setUser(session?.user || null);
-      }
-    );
-
-    return () => {
-      listener?.subscription.unsubscribe();
-    };
-  }, []);
-
-  return { user, loading };
-};
-
-export default useAuth;
+  return (
+    <Context.Provider value={{ user }}>
+      {children}
+    </Context.Provider>
+  )
+}
 ```
 
 ---
 
-## Real-time Subscriptions
+## 🔄 Realtime
 
-### Subscribe to Changes
+### Configuración
 
-```javascript
-// Listen to all posts
-const subscription = supabase
-  .channel('posts')
-  .on(
-    'postgres_changes',
-    { event: '*', schema: 'public', table: 'posts' },
-    (payload) => {
-      console.log('Change received!', payload);
-    }
-  )
-  .subscribe();
+En el dashboard: **Database → Replication** → Selecciona tablas para replicar.
 
-// Listen to specific event types
-supabase
-  .channel('posts')
-  .on(
-    'postgres_changes',
-    { event: 'INSERT', schema: 'public', table: 'posts' },
-    (payload) => {
-      console.log('New post created!', payload.new);
-    }
-  )
-  .on(
-    'postgres_changes',
-    { event: 'UPDATE', schema: 'public', table: 'posts' },
-    (payload) => {
-      console.log('Post updated!', payload.new);
-    }
-  )
-  .on(
-    'postgres_changes',
-    { event: 'DELETE', schema: 'public', table: 'posts' },
-    (payload) => {
-      console.log('Post deleted!', payload.old);
-    }
-  )
-  .subscribe();
+### Suscripciones en React
 
-// Unsubscribe
-subscription.unsubscribe();
-```
+```typescript
+// hooks/useRealtime.ts
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase'
 
-### React Hook for Real-time Data
-
-```javascript
-import { useEffect, useState } from 'react';
-import { supabase } from './supabaseClient';
-
-const useRealtimePosts = () => {
-  const [posts, setPosts] = useState([]);
+export function useRealtime<T>(table: string, query?: any) {
+  const [data, setData] = useState<T[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Initial fetch
-    const fetchPosts = async () => {
-      const { data } = await supabase
-        .from('posts')
-        .select('*')
-        .order('created_at', { ascending: false });
-      setPosts(data || []);
-    };
+    const supabase = createClient()
 
-    fetchPosts();
+    // Fetch inicial
+    const fetchData = async () => {
+      let q = supabase.from(table).select('*')
+      if (query) q = query(q)
+      const { data: result } = await q
+      setData(result || [])
+      setLoading(false)
+    }
 
-    // Subscribe to changes
-    const subscription = supabase
-      .channel('posts')
+    fetchData()
+
+    // Suscripción realtime
+    const channel = supabase
+      .channel(`${table}-changes`)
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'posts' },
+        { event: '*', schema: 'public', table },
         (payload) => {
           if (payload.eventType === 'INSERT') {
-            setPosts((prev) => [payload.new, ...prev]);
+            setData(prev => [payload.new as T, ...prev])
           } else if (payload.eventType === 'UPDATE') {
-            setPosts((prev) =>
-              prev.map((p) =>
-                p.id === payload.new.id ? payload.new : p
-              )
-            );
+            setData(prev => prev.map(item => 
+              (item as any).id === payload.new.id ? payload.new as T : item
+            ))
           } else if (payload.eventType === 'DELETE') {
-            setPosts((prev) =>
-              prev.filter((p) => p.id !== payload.old.id)
-            );
+            setData(prev => prev.filter(item => 
+              (item as any).id !== payload.old.id
+            ))
           }
         }
       )
-      .subscribe();
+      .subscribe()
 
     return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
+      supabase.removeChannel(channel)
+    }
+  }, [table])
 
-  return posts;
-};
+  return { data, loading }
+}
 
-export default useRealtimePosts;
+// Uso
+const { data: posts, loading } = useRealtime('posts')
+```
+
+### Presencia (colaboración en tiempo real)
+
+```typescript
+const channel = supabase.channel('room-1')
+
+channel
+  .on('presence', { event: 'sync' }, () => {
+    const state = channel.presenceState()
+    console.log('Online users:', state)
+  })
+  .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+    console.log('User joined:', newPresences)
+  })
+  .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+    console.log('User left:', leftPresences)
+  })
+  .subscribe(async (status) => {
+    if (status === 'SUBSCRIBED') {
+      await channel.track({
+        user_id: user.id,
+        online_at: new Date().toISOString(),
+      })
+    }
+  })
 ```
 
 ---
 
-## Storage
+## 📦 Storage
 
-### Upload Files
+### Crear Bucket (Dashboard)
 
-```javascript
-// Upload file to bucket
-const uploadFile = async (bucket, file, path) => {
+**Storage → New Bucket** → Nombre: `avatars`, Public: ✓
+
+### Upload
+
+```typescript
+// Subir archivo
+const uploadAvatar = async (userId: string, file: File) => {
   const { data, error } = await supabase.storage
-    .from(bucket)
-    .upload(path, file, {
+    .from('avatars')
+    .upload(`${userId}/avatar.jpg`, file, {
       cacheControl: '3600',
       upsert: true,
-    });
+    })
 
-  return { data, error };
-};
+  if (error) throw error
+  return data
+}
 
-// Example usage
-const handleFileUpload = async (event) => {
-  const file = event.target.files[0];
-  const { data, error } = await uploadFile(
-    'avatars',
-    file,
-    `${user.id}/avatar.jpg`
-  );
-};
+// Subir con progreso
+const uploadWithProgress = async (file: File) => {
+  const { data, error } = await supabase.storage
+    .from('documents')
+    .upload(file.name, file, {
+      cacheControl: '3600',
+      upsert: false,
+    })
+
+  return { data, error }
+}
 ```
 
-### Get File URL
+### Descargar
 
-```javascript
-// Get public URL
-const getPublicUrl = (bucket, path) => {
-  const { data } = supabase.storage
-    .from(bucket)
-    .getPublicUrl(path);
-  return data.publicUrl;
-};
+```typescript
+// URL pública (para buckets públicos)
+const { data } = supabase.storage
+  .from('avatars')
+  .getPublicUrl('user-123/avatar.jpg')
 
-// Example
-const avatarUrl = getPublicUrl('avatars', `${user.id}/avatar.jpg`);
+// URL firmada (temporal, para buckets privados)
+const { data, error } = await supabase.storage
+  .from('documents')
+  .createSignedUrl('report.pdf', 3600) // expira en 1 hora
 ```
 
-### Delete Files
+### Descargar como Blob
 
-```javascript
-const deleteFile = async (bucket, path) => {
-  const { error } = await supabase.storage
+```typescript
+const downloadFile = async (bucket: string, path: string) => {
+  const { data, error } = await supabase.storage
     .from(bucket)
-    .remove([path]);
-  return { error };
-};
+    .download(path)
+
+  if (error) throw error
+  return URL.createObjectURL(data)
+}
+```
+
+### Eliminar
+
+```typescript
+const { error } = await supabase.storage
+  .from('avatars')
+  .remove(['user-123/avatar.jpg'])
+```
+
+### Storage Policies (RLS para archivos)
+
+```sql
+-- Solo usuarios autenticados pueden subir
+CREATE POLICY "Authenticated users can upload"
+  ON storage.objects FOR INSERT
+  TO authenticated
+  WITH CHECK (bucket_id = 'avatars');
+
+-- Cualquiera puede ver (bucket público)
+CREATE POLICY "Public access to avatars"
+  ON storage.objects FOR SELECT
+  TO public
+  USING (bucket_id = 'avatars');
+
+-- Usuarios solo eliminan sus propios archivos
+CREATE POLICY "Users can delete own files"
+  ON storage.objects FOR DELETE
+  TO authenticated
+  USING (auth.uid()::text = (storage.foldername(name))[1]);
 ```
 
 ---
 
-## Best Practices
+## ⚡ Edge Functions
 
-### Row Level Security (RLS)
-
-Enable RLS policies to ensure data security:
-
-```sql
--- Enable RLS on users table
-ALTER TABLE users ENABLE ROW LEVEL SECURITY;
-
--- Create policy: users can only read their own data
-CREATE POLICY "Users can read own data"
-  ON users FOR SELECT
-  USING (auth.uid() = id);
-
--- Create policy: users can only update their own data
-CREATE POLICY "Users can update own data"
-  ON users FOR UPDATE
-  USING (auth.uid() = id);
-
--- Create policy: anyone can create a user
-CREATE POLICY "Anyone can create a user"
-  ON users FOR INSERT
-  WITH CHECK (true);
-```
-
-### Data Validation
-
-```javascript
-// Validate before insert
-const validateUser = (user) => {
-  const errors = {};
-
-  if (!user.email || !user.email.includes('@')) {
-    errors.email = 'Valid email required';
-  }
-
-  if (!user.username || user.username.length < 3) {
-    errors.username = 'Username must be at least 3 characters';
-  }
-
-  if (!user.password || user.password.length < 8) {
-    errors.password = 'Password must be at least 8 characters';
-  }
-
-  return Object.keys(errors).length === 0 ? null : errors;
-};
-```
-
-### Connection Pooling
-
-Use pgBouncer for connection pooling in production:
+### Deployar Function
 
 ```bash
-# Install pgBouncer
-brew install pgbouncer
+# Instalar CLI
+npm install -g supabase
 
-# Configure pgbouncer.ini
-[databases]
-mydatabase = host=localhost port=5432 dbname=mydatabase
+# Inicializar en proyecto
+supabase functions new my-function
 
-[pgbouncer]
-pool_mode = transaction
-max_client_conn = 1000
-default_pool_size = 25
+# Desplegar
+supabase functions deploy my-function
+```
+
+### Código de Function
+
+```typescript
+// supabase/functions/my-function/index.ts
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+serve(async (req) => {
+  const supabase = createClient(
+    Deno.env.get('SUPABASE_URL')!,
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+  )
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .limit(10)
+
+  return new Response(
+    JSON.stringify({ data, error }),
+    { headers: { 'Content-Type': 'application/json' } }
+  )
+})
+```
+
+### Invocar desde Cliente
+
+```typescript
+const { data, error } = await supabase.functions.invoke('my-function', {
+  body: { userId: '123' }
+})
 ```
 
 ---
 
-## Performance Optimization
+## 🤖 AI & Vectores
 
-### Indexes
+### Búsqueda Semántica (pgvector)
 
 ```sql
--- Create index for frequently searched columns
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_posts_user_id ON posts(user_id);
-CREATE INDEX idx_comments_post_id ON comments(post_id);
+-- Habilitar extensión vector
+CREATE EXTENSION vector;
 
--- Composite index for multiple columns
-CREATE INDEX idx_posts_user_published ON posts(user_id, published);
+-- Crear tabla con embedding
+CREATE TABLE documents (
+  id BIGSERIAL PRIMARY KEY,
+  content TEXT NOT NULL,
+  embedding vector(1536)
+);
 
--- Partial index (only indexed rows where condition is true)
-CREATE INDEX idx_active_users ON users(email) WHERE is_active = true;
+-- Búsqueda por similitud
+SELECT content, 1 - (embedding <=> $1::vector) AS similarity
+FROM documents
+ORDER BY embedding <=> $1::vector
+LIMIT 5;
 ```
 
-### Query Optimization
+### Edge Function para Embeddings
+
+```typescript
+// supabase/functions/search/index.ts
+serve(async (req) => {
+  const { query } = await req.json()
+  const supabase = createClient(/* ... */)
+  
+  // Generar embedding (usando OpenAI, Anthropic, etc.)
+  const embedding = await generateEmbedding(query)
+  
+  // Buscar documentos similares
+  const { data } = await supabase.rpc('match_documents', {
+    query_embedding: embedding,
+    match_threshold: 0.8,
+    match_count: 5
+  })
+  
+  return Response.json({ results: data })
+})
+```
+
+---
+
+## 🔒 Row Level Security (RLS)
+
+### Patrones Comunes
 
 ```sql
--- Use EXPLAIN to analyze query performance
+-- Enable RLS
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+
+-- Todos pueden leer
+CREATE POLICY "Public read" ON profiles
+  FOR SELECT USING (true);
+
+-- Solo owner puede actualizar
+CREATE POLICY "Owner update" ON profiles
+  FOR UPDATE USING (auth.uid() = id);
+
+-- Nuevo perfil al crear usuario (trigger)
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS trigger AS $$
+BEGIN
+  INSERT INTO public.profiles (id, username)
+  VALUES (new.id, new.raw_user_meta_data->>'username');
+  RETURN new;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+```
+
+### Verificar Policies
+
+```sql
+-- Listar policies de una tabla
+SELECT policyname, cmd, qual, with_check
+FROM pg_policies
+WHERE tablename = 'profiles';
+
+-- Testear policy
 EXPLAIN ANALYZE
-SELECT u.username, COUNT(p.id) as post_count
-FROM users u
-LEFT JOIN posts p ON u.id = p.user_id
-GROUP BY u.id, u.username;
-
--- Use LIMIT when possible
-SELECT * FROM posts LIMIT 100; -- Much faster than SELECT *
-
--- Use specific columns instead of SELECT *
-SELECT id, title, created_at FROM posts; -- Faster
-```
-
-### Caching Strategy
-
-```javascript
-// Implement caching with React Query
-import { useQuery } from '@tanstack/react-query';
-
-const useUserPosts = (userId) => {
-  return useQuery({
-    queryKey: ['posts', userId],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('posts')
-        .select('*')
-        .eq('user_id', userId);
-      return data;
-    },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-  });
-};
+SELECT * FROM profiles WHERE id = auth.uid();
 ```
 
 ---
 
-## Troubleshooting
+## 💰 Pricing
 
-### Common Issues
+| Plan | Precio | Database | Bandwidth | Auth |
+|------|--------|----------|-----------|------|
+| **Free** | $0 | 500MB | 2GB/mo | 50k MAU |
+| **Pro** | $25/mes | 8GB | 50GB/mo | 100k MAU |
+| **Team** | $599/mes | 100GB | 1TB/mo | Unlimited |
 
-| Issue | Solution |
+### Límites Free
+- 500MB database
+- 1GB storage
+- 2GB bandwidth transfer
+- 50k monthly active users
+- 50MB max file size
+- No AI features
+
+---
+
+## 🛠️ Integraciones
+
+### Next.js App Router
+
+```typescript
+// lib/supabase/server.ts (Server Component)
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
+
+export async function createClient() {
+  const cookieStore = await cookies()
+
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll()
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            )
+          } catch {}
+        },
+      },
+    }
+  )
+}
+
+// Uso en Server Component
+const supabase = await createClient()
+const { data: profiles } = await supabase.from('profiles').select('*')
+```
+
+### Prisma Integration
+
+```typescript
+// schema.prisma
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default (dbgenerated("gen_random_uuid()"))
+  email     String   @unique
+  createdAt DateTime @default(now())
+  profile   Profile?
+}
+
+model Profile {
+  id        String  @id @default (dbgenerated("gen_random_uuid()"))
+  userId    String  @unique
+  user      User    @relation(fields: [userId], references: [id])
+  username  String
+}
+```
+
+### Flutter / React Native
+
+```dart
+// Flutter
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+await Supabase.initialize(
+  url: 'https://xxx.supabase.co',
+  anonKey: 'eyJhbGci...',
+);
+
+final supabase = Supabase.instance.client;
+```
+
+---
+
+## 🔗 Dashboard Features
+
+```
+┌────────────────────────────────────────────────────────┐
+│  SUPABASE DASHBOARD                                    │
+├────────────────────────────────────────────────────────┤
+│                                                        │
+│  📊 Overview    - Métricas del proyecto               │
+│  📝 Table Editor - CRUD visual de tablas               │
+│  💿 SQL Editor   - Consultas directas                   │
+│  🔐 Authentication - Usuarios, providers, logs          │
+│  📦 Storage     - Buckets y archivos                   │
+│  🔄 Replication - Config realtime                      │
+│  ⚡ Edge Functions - Serverless functions              │
+│  🔧 API         - Docs auto-generadas                 │
+│  📈 Logs        - Logs de queries y auth               │
+│                                                        │
+└────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🚨 Troubleshooting
+
+| Issue | Solución |
 |-------|----------|
-| `CORS error` | Add domain to Supabase allowed origins |
-| `Authentication failed` | Check JWT token expiration and credentials |
-| `RLS policy denies access` | Verify RLS policies allow the operation |
-| `Connection timeout` | Check database URL and network connectivity |
-| `Out of memory` | Optimize queries, add indexes, use pagination |
-
-### Enable Query Logging
-
-```sql
--- Enable query logging
-SET log_statement = 'all';
-SET log_duration = on;
-
--- View logs
-SELECT * FROM pg_stat_statements ORDER BY total_time DESC;
-```
+| `CORS error` | Agregar dominio en Settings → Auth → Redirect URLs |
+| `RLS denies access` | Verificar policies con `EXPLAIN ANALYZE` |
+| `Auth session expired` | Refrescar token o re-autenticar |
+| `Realtime not working` | Habilitar replication en Database → Replication |
+| `Storage 404` | Verificar bucket policy y URL pública |
+| `Slow queries` | Crear índices, usar `EXPLAIN ANALYZE` |
 
 ---
 
-## Related Documentation
+## 🔗 Enlaces Relacionados
 
-- [[Firebase.md]] - Alternative backend solution
-- [[MongoDB.md]] - NoSQL database alternative
-- [[Next.js/Data-Fetching.md]] - Data fetching patterns
-- [[TypeScript]] - Type-safe database operations
+- [[Vercel.md|Vercel]] - Deployment frontend
+- [[Railway.md|Railway]] - Deployment backend alternativo
+- [[Firebase.md|Firebase]] - Alternativa a Supabase
+- [[MongoDB.md|MongoDB]] - Base de datos NoSQL
+- [[../../../README|Mapa de Stack]]
 
 ---
 
-## Version History
+## Control de versiones
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0.0 | 2026-03-30 | Initial PostgreSQL & Supabase guide |
-
+| Versión | Fecha | Autor | Cambios |
+|---------|-------|-------|---------|
+| 2.0.0 | 2026-03-30 | Daniel | Expansión completa con Auth, Realtime, Storage, Edge Functions, AI |
+| 1.0.0 | 2026-03-30 | OpenCode | Creación inicial PostgreSQL & Supabase |

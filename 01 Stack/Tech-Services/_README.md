@@ -40,6 +40,14 @@ Documentación de servicios externos, plataformas de hosting, bases de datos y h
 - Deploy desde Git
 - **Mejor para:** Sitios estáticos, JAMstack
 
+### Railway
+[[Railway.md]] - Plataforma multilenguaje con databases integradas
+- Deploy desde Git o Docker
+- Bases de datos integradas (PostgreSQL, MongoDB, Redis)
+- Pricing pay-as-you-go
+- Soporte multilenguaje (Node, Python, Go, Rust, etc.)
+- **Mejor para:** Backends, APIs, aplicaciones full-stack
+
 ---
 
 ## 🗄️ Bases de Datos
